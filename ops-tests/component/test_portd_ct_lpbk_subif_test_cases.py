@@ -130,15 +130,20 @@ def portd(sw1, step):
     # enabling the loopback interface
     sw1("interface loopback 1")
     sw1("exit")
-    cmnd = "ip netns exec swns ifconfig lo:1"
-    sw1(cmnd, shell='bash')
-    # assert "lo:1" in output
+    cmnd = "ip netns exec swns ifconfig loopback1"
+    #out = sw1(cmnd, shell='bash')
+    #assert "loopback1" in out
     # configuring the ip address and verifying
     sw1("interface loopback 1")
     sw1("ip address 192.168.1.5/24")
     sw1("exit")
-    sw1(cmnd, shell='bash')
-    # assert "inet addr:192.168.1.5" in output
+    # portd needs time to react and create the interface in the kernel
+    sleep(5)
+    out = sw1(cmnd, shell='bash')
+    assert "inet addr:192.168.1.5" in out
+    # verifying "kernel_interface_ready" == "true"
+    out = sw1("get port loopback1 kernel_interface_ready", shell="vsctl")
+    assert "true" in out
     # verifying ping from host
     sw1("ping -c 5 192.168.1.5", shell='bash')
     sleep(2)
