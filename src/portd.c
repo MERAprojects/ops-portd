@@ -821,6 +821,8 @@ portd_init(const char *remote)
     ovsdb_idl_add_column(idl, &ovsrec_port_col_other_config);
     ovsdb_idl_add_column(idl, &ovsrec_port_col_forwarding_state);
     ovsdb_idl_omit_alert(idl, &ovsrec_port_col_forwarding_state);
+    ovsdb_idl_add_column(idl, &ovsrec_port_col_kernel_interface_ready);
+    ovsdb_idl_omit_alert(idl, &ovsrec_port_col_kernel_interface_ready);
 
     /*
      * Adding the interface table so that we can listen to interface
@@ -3271,12 +3273,17 @@ portd_reconfig_ns_loopback(struct port *port,
 
     if (create_flag)
     {
+        bool kernel_interface_ready = true;
+
         if (!portd_add_interface_netlink(port_row, "dummy", 0))
         {
             VLOG_ERR("Netlink failed to create dummy interface: %s (%s)",
 	             port_row->name, strerror(errno));
             return false;
         }
+        /* kernel interface is created */
+        ovsrec_port_set_kernel_interface_ready(port_row, &kernel_interface_ready, 1);
+        commit_txn = true;
     }
 
     if (vrf->cfg && strcmp(vrf->name, DEFAULT_VRF_NAME) &&
