@@ -131,8 +131,6 @@ def portd(sw1, step):
     sw1("interface loopback 1")
     sw1("exit")
     cmnd = "ip netns exec swns ifconfig loopback1"
-    #out = sw1(cmnd, shell='bash')
-    #assert "loopback1" in out
     # configuring the ip address and verifying
     sw1("interface loopback 1")
     sw1("ip address 192.168.1.5/24")

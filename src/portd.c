@@ -226,7 +226,7 @@ static void portd_handle_port_config(const struct ovsrec_port *row,
                                      struct port_lag_data *portp);
 static void portd_update_interface_lag_eligibility(struct iface_data *idp);
 
-int
+bool
 portd_reconfig_ns_loopback(struct port *port,
                            struct ovsrec_port *port_row, bool create_flag);
 
@@ -3265,7 +3265,7 @@ bool portd_add_interface_netlink(struct ovsrec_port *port_row,
     return true;
 }
 
-int
+bool
 portd_reconfig_ns_loopback(struct port *port,
                            struct ovsrec_port *port_row, bool create_flag)
 {
@@ -3305,7 +3305,7 @@ portd_reconfig_ns_loopback(struct port *port,
         portd_reconfig_ipaddr(port, port_row);
     }
 
-    return EXIT_SUCCESS;
+    return true;
 }
 
 void
